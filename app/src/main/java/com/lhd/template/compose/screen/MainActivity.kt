@@ -8,6 +8,7 @@ import android.view.WindowInsetsController
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import com.lhd.template.compose.router.MainNavGraph
 import com.lhd.template.compose.screen.theme.MainTheme
 
 class MainActivity() : ComponentActivity() {
@@ -17,7 +18,7 @@ class MainActivity() : ComponentActivity() {
         hideNavigationBar()
         setContent {
             MainTheme {
-                MainApp()
+                MainNavGraph()
             }
         }
     }
@@ -25,7 +26,7 @@ class MainActivity() : ComponentActivity() {
     private fun hideNavigationBar() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             window.insetsController?.apply {
-                hide(WindowInsets.Type.systemBars())
+                hide(WindowInsets.Type.navigationBars())
                 systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             }
         } else {
