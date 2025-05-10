@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.lhd.template.compose"
+    namespace = "com.lhd.jetcinema"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.lhd.template.compose"
+        applicationId = "com.lhd.jetcinema"
         minSdk = 24
         targetSdk = 35
         versionCode = 1

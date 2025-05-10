@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Template-compose"
+rootProject.name = "JetCinema"
 include(":app")
  
