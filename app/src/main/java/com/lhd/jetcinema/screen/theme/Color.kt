@@ -3,13 +3,14 @@ package com.lhd.jetcinema.screen.theme
 import androidx.compose.ui.graphics.Color
 
 object Colors {
-    val primary = Color(0xFF1D51FE)
+    val primary = Color(0xFF685CF0)
     val secondary = Color(0xFFBBCAFE)
     val tertiary = Color(0xFF141720)
     val success = Color(0xFF00C566)
     val error = Color(0xFFE53935)
     val warning = Color(0xFFFACC15)
 
+    val transparent = Color(0x00FFFFFF)
     val white = Color(0xFFFEFEFE)
     val black = Color(0xFF111111)
     val blackDark = Color(0xFF02050F)

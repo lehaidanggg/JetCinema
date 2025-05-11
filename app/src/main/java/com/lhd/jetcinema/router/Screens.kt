@@ -1,12 +1,13 @@
 package com.lhd.jetcinema.router
 
-import com.lhd.jetcinema.data.model.TypeScan
+import com.lhd.jetcinema.domain.model.TypeScan
 
 /**
- * List of screens for [JetCinemaAppState]
+ * List of screens for [com.lhd.jetcinema.screen.JetCinemaAppState]
  */
 sealed class Screen(val route: String) {
     object Splash : Screen("splash")
+    object Onboarding : Screen("onboarding")
     object Home : Screen("home")
     object ScanFile : Screen("scanFile/$ARG_TYPE_SCAN_FILE") {
         fun createRoute(typeScan: TypeScan) = "scanFile/${typeScan.value}"

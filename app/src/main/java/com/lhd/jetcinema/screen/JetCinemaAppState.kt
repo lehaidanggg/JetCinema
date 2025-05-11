@@ -13,7 +13,7 @@ import androidx.core.content.ContextCompat.getSystemService
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.lhd.jetcinema.data.model.TypeScan
+import com.lhd.jetcinema.domain.model.TypeScan
 import com.lhd.jetcinema.router.Screen
 import com.lhd.jetcinema.util.lifecycleIsResumed
 
@@ -33,8 +33,9 @@ class JetCinemaAppState(
     var isOnline by mutableStateOf(checkIfOnline())
         private set
 
-    val navigationFunc: NavigationFunc
-        get() = NavigationFunc(navController)
+    val navigationAction: NavigationAction by lazy {
+        NavigationAction(navController)
+    }
 
 
     fun refreshOnline() {
@@ -52,9 +53,15 @@ class JetCinemaAppState(
     }
 }
 
-class NavigationFunc(
+class NavigationAction(
     val navController: NavHostController
 ) {
+
+    fun navigateOnBoarding(from: NavBackStackEntry) {
+        if (from.lifecycleIsResumed()) {
+            navController.navigate(Screen.Onboarding.route)
+        }
+    }
 
     fun navigateToHome(from: NavBackStackEntry) {
         if (from.lifecycleIsResumed()) {
