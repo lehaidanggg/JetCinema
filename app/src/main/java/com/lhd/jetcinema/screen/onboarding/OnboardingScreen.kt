@@ -39,10 +39,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.lhd.jetcinema.domain.model.OnBoardingModel
 import com.lhd.jetcinema.screen.theme.Colors
+import com.ramcosta.composedestinations.annotation.Destination
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+@Destination
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun OnboardingScreen(

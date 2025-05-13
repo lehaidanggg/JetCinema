@@ -1,6 +1,9 @@
 package com.lhd.jetcinema.domain.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class Movie(
     val id: Int,
     val adult: Boolean,
@@ -17,4 +20,4 @@ data class Movie(
     val video: Boolean,
     val voteAverage: Double,
     val voteCount: Int
-)
+) : Parcelable

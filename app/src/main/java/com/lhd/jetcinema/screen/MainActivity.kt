@@ -8,7 +8,6 @@ import android.view.WindowInsetsController
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.lhd.jetcinema.router.MainNavGraph
 import com.lhd.jetcinema.screen.theme.MainTheme
 
 class MainActivity() : ComponentActivity() {

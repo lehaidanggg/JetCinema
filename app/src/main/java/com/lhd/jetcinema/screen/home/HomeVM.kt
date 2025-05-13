@@ -1,17 +1,16 @@
 package com.lhd.jetcinema.screen.home
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lhd.jetcinema.domain.model.Movie
 import com.lhd.jetcinema.domain.repository.MovieRepository
+import com.lhd.jetcinema.util.Constants
 import com.lhd.jetcinema.util.Result
 import com.lhd.jetcinema.util.asResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 
@@ -23,19 +22,19 @@ class HomeVM(
     private val _sliderUiState = MutableStateFlow<SliderUiState>(SliderUiState.Loading)
     val sliderUiState: StateFlow<SliderUiState> = _sliderUiState.asStateFlow()
 
-    private val _nowPlayingUiState = MutableStateFlow<MovieUiState>(MovieUiState.Loading)
-    val nowPlayingUiState: StateFlow<MovieUiState> = _nowPlayingUiState.asStateFlow()
-
     private val _popularUiState = MutableStateFlow<MovieUiState>(MovieUiState.Loading)
     val popularUiState: StateFlow<MovieUiState> = _popularUiState.asStateFlow()
+
+    private val _topRatedUiState = MutableStateFlow<MovieUiState>(MovieUiState.Loading)
+    val topRatedUiState: StateFlow<MovieUiState> = _topRatedUiState.asStateFlow()
 
 
     private var _page: Int = 1
 
     init {
         fetchSlider()
-        fetchMovieNowPlaying()
         fetchMoviePopular()
+        fetchMovieTopRated()
     }
 
 
@@ -64,37 +63,10 @@ class HomeVM(
         }
     }
 
-    fun fetchMovieNowPlaying() {
-        viewModelScope.launch {
-            movieRepository.fetchByCategory(
-                category = "now_playing",
-                page = _page
-            )
-                .asResult()
-                .collectLatest { nowPlayingUiState ->
-                    when (nowPlayingUiState) {
-                        Result.Loading -> {
-                            _nowPlayingUiState.tryEmit(MovieUiState.Loading)
-                        }
-
-                        is Result.Error -> {
-                            val exception = nowPlayingUiState.exception
-                            _nowPlayingUiState.tryEmit(MovieUiState.Error(exception))
-                        }
-
-                        is Result.Success -> {
-                            val movies = nowPlayingUiState.data
-                            _nowPlayingUiState.tryEmit(MovieUiState.Success(movies))
-                        }
-                    }
-                }
-        }
-    }
-
     fun fetchMoviePopular() {
         viewModelScope.launch {
             movieRepository.fetchByCategory(
-                category = "popular",
+                category = Constants.POPULAR,
                 page = _page
             )
                 .asResult()
@@ -112,6 +84,33 @@ class HomeVM(
                         is Result.Success -> {
                             val movies = nowPlayingUiState.data
                             _popularUiState.tryEmit(MovieUiState.Success(movies))
+                        }
+                    }
+                }
+        }
+    }
+
+    fun fetchMovieTopRated() {
+        viewModelScope.launch {
+            movieRepository.fetchByCategory(
+                category = Constants.TOP_RATED,
+                page = _page
+            )
+                .asResult()
+                .collectLatest { nowPlayingUiState ->
+                    when (nowPlayingUiState) {
+                        Result.Loading -> {
+                            _topRatedUiState.tryEmit(MovieUiState.Loading)
+                        }
+
+                        is Result.Error -> {
+                            val exception = nowPlayingUiState.exception
+                            _topRatedUiState.tryEmit(MovieUiState.Error(exception))
+                        }
+
+                        is Result.Success -> {
+                            val movies = nowPlayingUiState.data
+                            _topRatedUiState.tryEmit(MovieUiState.Success(movies))
                         }
                     }
                 }

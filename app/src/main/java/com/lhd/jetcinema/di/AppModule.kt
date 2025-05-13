@@ -2,6 +2,7 @@ package com.lhd.jetcinema.di
 
 import com.lhd.jetcinema.data.repositoryImpl.MovieRepositoryImpl
 import com.lhd.jetcinema.domain.repository.MovieRepository
+import com.lhd.jetcinema.screen.detail_movie.DetailVM
 import com.lhd.jetcinema.screen.home.HomeVM
 import kotlinx.coroutines.Dispatchers
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -32,4 +33,5 @@ val appModules = module {
 
     // VIEWMODEL
     viewModel<HomeVM> { HomeVM(get()) }
+    viewModel<DetailVM> { DetailVM() }
 }
