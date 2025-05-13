@@ -3,7 +3,7 @@ package com.lhd.jetcinema.data.remote.dto
 
 import com.google.gson.annotations.SerializedName
 
-data class ResultMovieDto(
+data class MovieResponseDto(
     @SerializedName("page")
     val page: Int,
     @SerializedName("results")

@@ -14,7 +14,7 @@ data class MovieDto(
     @SerializedName("id")
     val id: Int,
     @SerializedName("media_type")
-    val mediaType: String,
+    val mediaType: String?,
     @SerializedName("original_language")
     val originalLanguage: String,
     @SerializedName("original_title")

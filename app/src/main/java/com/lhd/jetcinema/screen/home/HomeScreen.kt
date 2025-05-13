@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -19,6 +20,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PageSize
 import androidx.compose.foundation.pager.rememberPagerState
@@ -38,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -47,11 +53,13 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.lhd.jetcinema.R
 import com.lhd.jetcinema.domain.model.Movie
 import com.lhd.jetcinema.domain.model.TypeScan
 import com.lhd.jetcinema.screen.common.widgets.MyErrorView
 import com.lhd.jetcinema.screen.common.widgets.MyLoadingView
+import com.lhd.jetcinema.screen.home.HomeVM.MovieUiState
 import com.lhd.jetcinema.screen.home.HomeVM.SliderUiState
 import com.lhd.jetcinema.screen.theme.Colors
 import com.lhd.jetcinema.util.Constants
@@ -64,91 +72,113 @@ fun HomeScreen(
     navigateScanFile: (TypeScan) -> Unit
 ) {
     val sliderState by viewmodel.sliderUiState.collectAsStateWithLifecycle()
+    val nowPlaying by viewmodel.nowPlayingUiState.collectAsStateWithLifecycle()
+    val popularMovie by viewmodel.popularUiState.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = { HomeAppBar() },
         containerColor = Colors.white,
-        modifier = Modifier
-            .padding(WindowInsets.statusBars.asPaddingValues())
+        modifier = Modifier.padding(WindowInsets.statusBars.asPaddingValues())
     ) { contentPadding ->
 
-        SliderContent(
+        LazyColumn(
             modifier = Modifier.padding(contentPadding),
-            sliderState = sliderState
-        )
+            contentPadding = PaddingValues(vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            item {
+                SliderContent(sliderState = sliderState)
+            }
 
+            item {
+                NowPlayingContent(nowPlayingState = nowPlaying)
+            }
+
+            item {
+                PopularContent(popularState = popularMovie)
+            }
+        }
     }
 }
 
-@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
-fun SliderContent(
-    modifier: Modifier = Modifier,
-    sliderState: SliderUiState,
+fun NowPlayingContent(
+    nowPlayingState: MovieUiState
 ) {
-    when (sliderState) {
-        SliderUiState.Loading -> {
-            MyLoadingView(
-                modifier = modifier
-            )
+    when (val state = nowPlayingState) {
+        MovieUiState.Loading -> {
+            MyLoadingView()
         }
 
-        is SliderUiState.Error -> {
+        is MovieUiState.Error -> {
             MyErrorView(
-                modifier = modifier,
-                error = sliderState.error.message.toString()
+                error = state.error.message.toString()
             )
         }
 
-        is SliderUiState.Success -> {
-            val movies = sliderState.data
-            val pagerState = rememberPagerState(
-                pageCount = { movies.size }
-            )
-
+        is MovieUiState.Success -> {
             Column {
-                BoxWithConstraints(
-                    modifier = modifier
-                ) {
-                    val parentHeight: Dp = maxHeight
-                    val parentWidth: Dp = maxWidth
-                    val heightPager = parentHeight * 1f / 4f
-                    val widthText = parentWidth * 2f / 3f
+                HeaderItem(title = "Now Playing")
 
-                    HorizontalPager(
-                        modifier = Modifier.height(heightPager),
-                        state = pagerState,
-                        pageSize = PageSize.Fill,
-                    ) { index ->
-                        val movie = movies[index]
-                        SliderItem(
-                            modifier = modifier,
-                            movie = movie,
-                            widthText = widthText
+                Spacer(modifier = Modifier.height(6.dp))
+
+                LazyRow(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(216.dp),
+                    contentPadding = PaddingValues(horizontal = 12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(
+                        items = state.data,
+                        key = { item -> item.id }
+                    ) { movie ->
+                        MovieItem(
+                            modifier = Modifier.width(140.dp),
+                            movie = movie
                         )
                     }
                 }
+            }
+        }
+    }
+}
 
-                Spacer(modifier = Modifier.height(8.dp))
+@Composable
+fun PopularContent(
+    popularState: MovieUiState
+) {
+    when (val state = popularState) {
+        MovieUiState.Loading -> {
+            MyLoadingView()
+        }
 
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically,
+        is MovieUiState.Error -> {
+            MyErrorView(
+                error = state.error.message.toString()
+            )
+        }
+
+        is MovieUiState.Success -> {
+            Column {
+                HeaderItem(title = "Popular")
+
+                Spacer(modifier = Modifier.height(6.dp))
+
+                LazyRow(
                     modifier = Modifier
-                        .padding(8.dp)
                         .fillMaxWidth()
+                        .height(216.dp),
+                    contentPadding = PaddingValues(horizontal = 12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    repeat(movies.size) { index ->
-                        val isSelected = pagerState.currentPage == index
-                        Box(
-                            modifier = Modifier
-                                .padding(4.dp)
-                                .width(if (isSelected) 24.dp else 6.dp)
-                                .height(6.dp)
-                                .background(
-                                    color = if (isSelected) Colors.primary else Colors.grayScale70,
-                                    shape = CircleShape
-                                )
+                    items(
+                        items = state.data,
+                        key = { item -> item.id }
+                    ) { movie ->
+                        MovieItem(
+                            modifier = Modifier.width(140.dp),
+                            movie = movie
                         )
                     }
                 }
@@ -205,6 +235,50 @@ fun HomeAppBar(
     }
 }
 
+@SuppressLint("UnusedBoxWithConstraintsScope")
+@Composable
+fun SliderContent(
+    modifier: Modifier = Modifier,
+    sliderState: SliderUiState,
+) {
+    when (sliderState) {
+        SliderUiState.Loading -> {
+            MyLoadingView()
+        }
+
+        is SliderUiState.Error -> {
+            MyErrorView(
+                error = sliderState.error.message.toString()
+            )
+        }
+
+        is SliderUiState.Success -> {
+            val movies = sliderState.data
+            val pagerState = rememberPagerState(
+                pageCount = { movies.size }
+            )
+
+            BoxWithConstraints {
+                val parentWidth: Dp = maxWidth
+                val widthText = parentWidth * 2f / 3f
+
+                HorizontalPager(
+                    modifier = modifier.height(172.dp),
+                    state = pagerState,
+                    pageSize = PageSize.Fill,
+                    contentPadding = PaddingValues(horizontal = 12.dp),
+                    pageSpacing = 8.dp
+                ) { index ->
+                    val movie = movies[index]
+                    SliderItem(
+                        movie = movie,
+                        widthText = widthText
+                    )
+                }
+            }
+        }
+    }
+}
 
 @Composable
 fun SliderItem(
@@ -213,10 +287,7 @@ fun SliderItem(
     widthText: Dp
 ) {
     Surface(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 12.dp)
-            .clip(RoundedCornerShape(20.dp))
+        modifier = modifier.clip(RoundedCornerShape(20.dp)),
     ) {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -229,9 +300,8 @@ fun SliderItem(
                 modifier = Modifier.fillMaxSize(),
             )
 
-            Column(
-                verticalArrangement = Arrangement.Center,
-                modifier = modifier
+            Box(
+                modifier = Modifier
                     .width(widthText)
                     .fillMaxHeight()
                     .background(
@@ -240,57 +310,102 @@ fun SliderItem(
                         )
                     )
             ) {
-                Text(
-                    text = movie.title,
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        color = Colors.white,
-                        fontWeight = FontWeight.W600
-                    ),
-                    textAlign = TextAlign.Start,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-
-                Spacer(modifier = Modifier.height(6.dp))
-
-                Text(
-                    text = movie.overview,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.bodySmall.copy(
-                        color = Colors.grayScale10,
-                    ),
-                    textAlign = TextAlign.Start,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                Button(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    colors = ButtonColors(
-                        containerColor = Colors.white,
-                        contentColor = Colors.primary,
-                        disabledContentColor = Colors.grayScale40,
-                        disabledContainerColor = Colors.grayScale40
-                    ),
-                    onClick = {
-                        // TODO: handle click watch now
-                    }
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        modifier = Modifier.padding(0.dp),
-                        text = "Watch now",
-                        style = MaterialTheme.typography.bodyMedium,
+                        text = movie.title,
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            color = Colors.white,
+                            fontWeight = FontWeight.W600
+                        ),
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.padding(horizontal = 16.dp)
                     )
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    Text(
+                        text = movie.overview,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            color = Colors.grayScale10,
+                        ),
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Button(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        colors = ButtonColors(
+                            containerColor = Colors.white,
+                            contentColor = Colors.primary,
+                            disabledContentColor = Colors.grayScale40,
+                            disabledContainerColor = Colors.grayScale40
+                        ),
+                        onClick = {
+                            // TODO: handle click watch now
+                        }
+                    ) {
+                        Text(
+                            modifier = Modifier.padding(0.dp),
+                            text = "Watch now",
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
                 }
             }
         }
     }
 }
 
+@Composable
+fun MovieItem(
+    modifier: Modifier = Modifier,
+    movie: Movie,
+) {
+    Box(
+        modifier = modifier.clip(RoundedCornerShape(12.dp)),
+        contentAlignment = Alignment.CenterStart
+    ) {
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data("${Constants.BASE_URL_IMAGE}${movie.posterPath}")
+                .crossfade(true)
+                .build(),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+        )
+    }
+}
+
+@Composable
+fun HeaderItem(
+    modifier: Modifier = Modifier,
+    title: String
+) {
+    Box(
+        modifier = modifier.wrapContentWidth()
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleLarge.copy(
+                fontWeight = FontWeight.W700
+            ),
+            modifier = Modifier
+                .padding(horizontal = 12.dp)
+                .align(Alignment.Center)
+        )
+    }
+}
+
 
 // =================================== PREVIEW ====================================
-
 @Preview
 @Composable
 fun HomeAppBarPreview() {

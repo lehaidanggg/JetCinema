@@ -6,7 +6,7 @@ data class Movie(
     val adult: Boolean,
     val backdropPath: String,
     val genreIds: List<Int>,
-    val mediaType: String,
+    val mediaType: String?,
     val originalLanguage: String,
     val originalTitle: String,
     val overview: String,
