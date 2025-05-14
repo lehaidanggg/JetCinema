@@ -84,7 +84,7 @@ fun HomeScreen(
         LazyColumn(
             modifier = Modifier.padding(contentPadding),
             contentPadding = PaddingValues(vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             // SLIDER
             item {

@@ -1,5 +1,6 @@
 package com.lhd.jetcinema.data.remote.api
 
+import com.lhd.jetcinema.data.remote.dto.GenresDto
 import com.lhd.jetcinema.data.remote.dto.MovieResponseDto
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -19,4 +20,10 @@ interface MovieApiService {
         @Query("language") language: String = "en-US",
         @Query("page") page: Int,
     ) : MovieResponseDto
+
+    //https://api.themoviedb.org/3/genre/movie/list?language=en
+    @GET("3/genre/movie/list")
+    suspend fun fetchGenres(
+        @Query("language") language: String = "en-US"
+    ): GenresDto
 }

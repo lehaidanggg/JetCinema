@@ -1,7 +1,10 @@
 package com.lhd.jetcinema.data.repositoryImpl
 
 import com.lhd.jetcinema.data.remote.api.MovieApiService
+import com.lhd.jetcinema.data.remote.dto.GenreDto
+import com.lhd.jetcinema.data.remote.dto.GenresDto
 import com.lhd.jetcinema.data.remote.dto.MovieResponseDto
+import com.lhd.jetcinema.domain.model.Genre
 import com.lhd.jetcinema.domain.model.Movie
 import com.lhd.jetcinema.domain.repository.MovieRepository
 import kotlinx.coroutines.CoroutineDispatcher
@@ -42,5 +45,13 @@ class MovieRepositoryImpl(
             .movieDtos
             .map { it.toDomain() }
         emit(movies)
+    }.flowOn(dispatcher)
+
+    override fun fetchGenre(language: String): Flow<List<Genre>> = flow<List<Genre>> {
+        val genres = movieApiService
+            .fetchGenres()
+            .genres
+            .map { it.toDomain() }
+        emit(genres)
     }.flowOn(dispatcher)
 }

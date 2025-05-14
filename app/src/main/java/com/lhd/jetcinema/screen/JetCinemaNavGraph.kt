@@ -17,7 +17,6 @@ fun MainNavGraph(
             navController = navController,
             navGraph = NavGraphs.root,
             startRoute = start,
-
         )
     } else {
         OfflineDialog { appState.refreshOnline() }

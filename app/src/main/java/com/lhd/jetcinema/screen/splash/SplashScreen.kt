@@ -18,16 +18,29 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lhd.jetcinema.BuildConfig
 import com.lhd.jetcinema.R
+import com.lhd.jetcinema.screen.rememberMainAppState
 import com.lhd.jetcinema.screen.theme.Colors
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun SplashScreen(
+    viewmodel: SplashVM = koinViewModel(),
     navigateToOnboarding: () -> Unit
 ) {
+    val appState = rememberMainAppState()
     LaunchedEffect(Unit) {
-        delay(2000)
-        navigateToOnboarding.invoke()
+        viewmodel.eventFlow.collectLatest { event ->
+            when (event) {
+                is SplashVM.UiEvent.UpdateGenre -> {
+                    appState.setGenres(event.genres)
+                    delay(2000)
+                    navigateToOnboarding.invoke()
+                }
+            }
+        }
+
     }
 
     Scaffold { contentPadding ->
