@@ -10,8 +10,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat.getSystemService
-import com.lhd.jetcinema.data.remote.dto.GenreDto
-import com.lhd.jetcinema.domain.model.Genre
 
 
 @Composable
@@ -27,15 +25,8 @@ class JetCinemaAppState(
     var isOnline by mutableStateOf(checkIfOnline())
         private set
 
-    val genres = mutableListOf<Genre>()
-
     fun refreshOnline() {
         isOnline = checkIfOnline()
-    }
-
-    fun setGenres(genres: MutableList<Genre>) {
-        this.genres.clear()
-        this.genres.addAll(genres)
     }
 
     @Suppress("DEPRECATION")

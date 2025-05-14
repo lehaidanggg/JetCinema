@@ -29,18 +29,15 @@ fun SplashScreen(
     viewmodel: SplashVM = koinViewModel(),
     navigateToOnboarding: () -> Unit
 ) {
-    val appState = rememberMainAppState()
     LaunchedEffect(Unit) {
         viewmodel.eventFlow.collectLatest { event ->
             when (event) {
                 is SplashVM.UiEvent.UpdateGenre -> {
-                    appState.setGenres(event.genres)
                     delay(2000)
                     navigateToOnboarding.invoke()
                 }
             }
         }
-
     }
 
     Scaffold { contentPadding ->
