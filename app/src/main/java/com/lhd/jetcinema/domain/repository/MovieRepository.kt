@@ -7,6 +7,6 @@ import kotlinx.coroutines.flow.Flow
 interface MovieRepository {
     fun fetchSlider(countSlider: Int = 5) : Flow<List<Movie>>
     fun fetchTrendingMovie() : Flow<List<Movie>>
-    fun fetchByCategory(category: String, page: Int) : Flow<List<Movie>>
+    fun fetchByCategory(category: String, page: Int, count: Int = 12) : Flow<List<Movie>>
     fun fetchGenre(language: String = "en-US") : Flow<List<Genre>>
 }

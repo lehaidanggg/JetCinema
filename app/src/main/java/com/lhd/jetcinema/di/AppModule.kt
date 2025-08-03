@@ -2,8 +2,9 @@ package com.lhd.jetcinema.di
 
 import com.lhd.jetcinema.data.repositoryImpl.MovieRepositoryImpl
 import com.lhd.jetcinema.domain.repository.MovieRepository
-import com.lhd.jetcinema.screen.detail_movie.DetailVM
-import com.lhd.jetcinema.screen.home.HomeVM
+import com.lhd.jetcinema.presenter.detail_movie.DetailVM
+import com.lhd.jetcinema.presenter.main.tabs.home.HomeVM
+import com.lhd.jetcinema.presenter.splash.SplashVM
 import kotlinx.coroutines.Dispatchers
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named
@@ -32,6 +33,7 @@ val appModules = module {
     }
 
     // VIEWMODEL
+    viewModel<SplashVM> { SplashVM(get()) }
     viewModel<HomeVM> { HomeVM(get()) }
-    viewModel<DetailVM> { DetailVM() }
+    viewModel<DetailVM> { DetailVM(get()) }
 }

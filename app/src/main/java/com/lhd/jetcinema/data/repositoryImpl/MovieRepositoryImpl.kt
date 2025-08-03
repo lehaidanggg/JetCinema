@@ -1,9 +1,6 @@
 package com.lhd.jetcinema.data.repositoryImpl
 
 import com.lhd.jetcinema.data.remote.api.MovieApiService
-import com.lhd.jetcinema.data.remote.dto.GenreDto
-import com.lhd.jetcinema.data.remote.dto.GenresDto
-import com.lhd.jetcinema.data.remote.dto.MovieResponseDto
 import com.lhd.jetcinema.domain.model.Genre
 import com.lhd.jetcinema.domain.model.Movie
 import com.lhd.jetcinema.domain.repository.MovieRepository
@@ -36,13 +33,14 @@ class MovieRepositoryImpl(
         emit(movies)
     }.flowOn(dispatcher)
 
-    override fun fetchByCategory(category: String, page: Int): Flow<List<Movie>> = flow<List<Movie>> {
+    override fun fetchByCategory(category: String, page: Int, count: Int): Flow<List<Movie>> = flow<List<Movie>> {
         val movies = movieApiService
             .fetchByCategory(
                 category = category,
                 page = page
             )
             .movieDtos
+            .take(count)
             .map { it.toDomain() }
         emit(movies)
     }.flowOn(dispatcher)

@@ -65,7 +65,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.foundation)
-
+    implementation(libs.kotlinx.collections.immutable)
     // TEST
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -77,12 +77,14 @@ dependencies {
 
     // NAVIGATION
     implementation(libs.androidx.navigation.compose)
-    implementation(libs.compose.destinations.core)
+//    implementation(libs.compose.destinations.core)
+//    ksp(libs.compose.destinations.ksp)
 
     // LIB SUPPORT REST API
-    implementation(libs.retrofit)
-    implementation(libs.converter.gson)
     implementation(libs.okhttp)
+    implementation(libs.retrofit)
+    implementation(libs.gson)
+    implementation(libs.converter.gson)
     implementation(libs.logging.interceptor)
     // ROOM
     // DI
@@ -91,6 +93,4 @@ dependencies {
 
     // OTHER
     implementation(libs.coil.kt.coil.compose)
-    // KSP - codegen
-    ksp(libs.compose.destinations.ksp)
 }
